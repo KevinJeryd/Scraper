@@ -95,7 +95,7 @@ class Scraper:
     def check_price(self):
         for item in self.items_current_price:
             if(self.items_current_price.get(item) < self.items_last_price.get(item, 0)):
-                self.send_email()
+                self.send_email(item)
             self.items_last_price[item] = self.items_current_price[item]
 
 
@@ -113,7 +113,7 @@ class Scraper:
         currentlyMonitoring.delete("anchor")
 
 
-    def send_email(self):
+    def send_email(self, item):
         #Gmails smtp server and port
         server = smtplib.SMTP("smtp.gmail.com", 587)
         #Used to identify itself when connecting to another email server to start the process of sending an email
@@ -122,13 +122,13 @@ class Scraper:
         server.starttls()
         server.ehlo()
 
-        server.login("kevinjeryd01@gmail.com", "INSERT YOUR PASSWORD HERE")
+        server.login("INSERT YOUR MAIL HERE", "INSERT YOUR PASSWORD HERE")
 
         subject = "An item you are monitoring has fallen in price"
-        body = "The product in question is : https://www.amazon.se/Redken-Stylinglera-Rough-Clay-20/dp/B00IZPNYSW/ref=sr_1_1?dchild=1&keywords=redken+rough+clay+20&qid=1616514443&sr=8-1"
+        body = ("The product in question is : %s", item)
 
         msg = f"Subject: {subject}\n\n{body}"
 
-        server.sendmail("kevinjeryd01@gmail.com", "kevinjeryd01@gmail.com", msg)
+        server.sendmail("INSERT SENDER MAIL", "INSERT RECEIVER MAIL", msg)
 
         server.quit()
