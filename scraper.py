@@ -17,7 +17,7 @@ class Scraper:
         self.items_last_price = items_last_price
 
     def main(self):
-        self.set_interval(self.update_prices, 1)
+        self.set_interval(self.update_prices, 10)
 
     #Updates the prices with a regular interval
     def set_interval(self, func, sec):
@@ -38,10 +38,14 @@ class Scraper:
             item_name = soup.find(id="productTitle").get_text()
             item_name = item_name.replace("\n", "")
 
-            item_price = soup.find(id="priceblock_ourprice").get_text() 
-            item_price = item_price.replace(",", ".")
-            item_price = item_price.replace('\xa0', '')
-            item_price = float(item_price[:-2])
+            try:
+                item_price = soup.find(id="priceblock_ourprice").get_text() 
+                item_price = item_price.replace(",", ".")
+                item_price = item_price.replace('\xa0', '')
+                item_price = float(item_price[:-2])
+            except:
+                item_price = 0
+        
 
             self.items_current_price[item_name] = item_price
 
@@ -53,13 +57,12 @@ class Scraper:
 
     def get_price(self, url, currentlyMonitoring):
         #The website we scrape from
-        URL = url
         self.url_arr.append(url)
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:86.0) Gecko/20100101 Firefox/86.0"}
 
 
         #Requests data from page
-        page = requests.get(URL, headers=headers)
+        page = requests.get(url, headers=headers)
         #Parses the html of the page (All of it, but we only want price and potentially some other stuff)
         soup = BeautifulSoup(page.content, "html.parser")
 
@@ -68,10 +71,14 @@ class Scraper:
         item_name = soup.find(id="productTitle").get_text()
         item_name = item_name.replace("\n", "")
 
-        item_price = soup.find(id="priceblock_ourprice").get_text() 
-        item_price = item_price.replace(",", ".")
-        item_price = item_price.replace('\xa0', '')
-        item_price = float(item_price[:-2])
+
+        try:
+            item_price = soup.find(id="priceblock_ourprice").get_text() 
+            item_price = item_price.replace(",", ".")
+            item_price = item_price.replace('\xa0', '')
+            item_price = float(item_price[:-2])
+        except:
+            item_price = ""
 
         #Since dictionaries doesn't support duplicate keys we don't have to check that the key has been entered before
         self.add_item(self.items_current_price, item_name, item_price, currentlyMonitoring)
@@ -115,7 +122,7 @@ class Scraper:
         server.starttls()
         server.ehlo()
 
-        server.login("kevinjeryd01@gmail.com", "tohpdqceikcsujwn")
+        server.login("kevinjeryd01@gmail.com", "INSERT YOUR PASSWORD HERE")
 
         subject = "An item you are monitoring has fallen in price"
         body = "The product in question is : https://www.amazon.se/Redken-Stylinglera-Rough-Clay-20/dp/B00IZPNYSW/ref=sr_1_1?dchild=1&keywords=redken+rough+clay+20&qid=1616514443&sr=8-1"

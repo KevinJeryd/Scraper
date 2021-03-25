@@ -11,4 +11,4 @@ def main():
 
     view.GUI()
 
-main()
+main() 
